@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iran Map</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+</head>
+
+<body>
+
+    <div id="map">
+
+    </div>
+
+</body>
+
+</html>
+<script src="js/mapdata.js"></script>
+<script src="js/citites.js"></script>
+<script src="js/countrymap.js"></script>
+<script src="js/jquery-3.3.1.js"></script>
+<script>
+
+    $(function () {
+        // reloadMap();
+        hideLogoSimplemaps();
+       // getLocationForProvince();
+        // changeColorProvince();
+        // changeColorForLocation();
+    })
+
+    const hideLogoSimplemaps = () => {
+        setTimeout(() => {
+            $('tspan:contains("Simplemaps.com Trial")').hide();
+        }, 10);
+    }
+
+    //#region Reload Map
+    const reloadMap = () => {
+        simplemaps_countrymap.load();
+    }
+    //#endregion
+
+
+    //#region ZoomOut
+    const zoomOut = () => {
+        simplemaps_countrymap.hooks.back = function () {
+            /// Your Code
+        }
+    }
+    //#endregion
+
+    //#region  Set Location For Province
+    const getLocationForProvince = () => {
+        jQuery.each(dataLocation, function (index, value) {
+            simplemaps_countrymap_mapdata.locations[index] = {
+                name: value.city, lat: "",
+                lng: ""
+            };
+        })
+
+        jQuery.each(dataLocation, function (index, value) {
+            simplemaps_countrymap_mapdata.locations[index] = {
+                name: value.city,
+                lat: value.latitude.toString(),
+                lng: value.longitude.toString(),
+                description: "",
+                image_url: "images/vector-clipart.png"
+            };
+        })
+        reloadMap();
+
+    }
+    //#endregion
+
+    //#region  Change Color Province
+
+    const changeColorProvince = () => {
+        var simplemaps = ["IRN3209", "IRN3210", "IRN3211", "IRN3212", "IRN3213", "IRN3214", "IRN3215",
+            "IRN3216", "IRN3217", "IRN3218", "IRN3219", "IRN3220",
+            "IRN3221", "IRN3228", "IRN3230", "IRN3231",
+            "IRN3232", "IRN3233", "IRN3234", "IRN3235",
+            "IRN3237", "IRN3238", "IRN3239", "IRN3240", "IRN3241",
+            "IRN3244", "IRN3245", "IRN3246", "IRN3247", "IRN3248", "IRN5490"];
+
+        for (var y = 0; y < simplemaps.length; y++) {
+            if (y % 2) {
+                simplemaps_countrymap.mapdata.state_specific[simplemaps[y]].color = "green";
+            }
+            else {
+                simplemaps_countrymap.mapdata.state_specific[simplemaps[y]].color = "orange";
+            }
+        }
+
+    }
+    const resetColorProvince = () => {
+        var simplemaps = ["IRN3209", "IRN3210", "IRN3211", "IRN3212", "IRN3213", "IRN3214", "IRN3215",
+            "IRN3216", "IRN3217", "IRN3218", "IRN3219", "IRN3220",
+            "IRN3221", "IRN3228", "IRN3230", "IRN3231",
+            "IRN3232", "IRN3233", "IRN3234", "IRN3235",
+            "IRN3237", "IRN3238", "IRN3239", "IRN3240", "IRN3241",
+            "IRN3244", "IRN3245", "IRN3246", "IRN3247", "IRN3248", "IRN5490"];
+
+        for (var y = 0; y < simplemaps.length; y++) {
+            simplemaps_countrymap.mapdata.state_specific[simplemaps[y]].color = "default";
+        }
+    }
+
+    //#endregion
+
+    //#region  Change Color Location (City)
+
+    const changeColorForLocation = () => {
+        jQuery.each(dataLocation, function (index, value) {
+            simplemaps_countrymap_mapdata.locations[index] = {
+                name: value.city, lat: "",
+                lng: ""
+            };
+        })
+
+        jQuery.each(dataLocation, function (index, value) {
+            if (index % 2) {
+                simplemaps_countrymap_mapdata.locations[index] = {
+                    name: value.city,
+                    lat: value.latitude.toString(),
+                    lng: value.longitude.toString(),
+                    description: "",
+                    image_url: "images/pin-map-icon-black.png"
+                }
+            }
+            else {
+                simplemaps_countrymap_mapdata.locations[index] = {
+                    name: value.city,
+                    lat: value.latitude.toString(),
+                    lng: value.longitude.toString(),
+                    description: "",
+                    image_url: "images/green-map-location.png"
+                }
+            }
+
+        })
+        reloadMap();
+
+    }
+
+    //#endregion
+
+    //#region Click on Province And Zoom
+    simplemaps_countrymap.hooks.zoomable_click_state = function (id) {
+
+        let provincesList = [];
+        for (let index = 0; index < 31; index++) {
+            const el = simplemaps_countrymap_mapdata.labels[index];
+            provincesList.push(el);
+        }
+        let provinceDataClicked = provincesList.find(f => f.parent_id == id)
+    }
+    //#endregion
+
+    //#region Click on Location (City)
+
+    simplemaps_countrymap.hooks.click_location = function (id) {
+
+        let clickedLocation = dataLocation[id];
+    }
+    //#endregion
+
+
+</script>
