@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iran Map</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
-
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/bootstrap.min.js" defer></script>
 </head>
 
 <body>
@@ -16,6 +17,29 @@
 
     </div>
 
+    <div class="modal" id="modal-info" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <p> <span id="city-info"></span></p>
+                    </h5>
+                    <button onclick="hideModal()" type="button" class="btn-close btn btn-danger">×</button>
+                </div>
+                <div class="modal-body">
+                    <ol id="city-items"></ol>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="hideModal()" type="button" class="btn btn-secondary">بستن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
 </body>
 
 </html>
@@ -23,13 +47,17 @@
 <script src="js/citites.js"></script>
 <script src="js/countrymap.js"></script>
 <script src="js/jquery-3.3.1.js"></script>
+<script src="./js/bootstrap.bundle.min.js"></script>
 <script>
+
+
+
 
     $(function () {
         // reloadMap();
         hideLogoSimplemaps();
-       // getLocationForProvince();
-        // changeColorProvince();
+        //getLocationForProvince();
+        //changeColorProvince();
         // changeColorForLocation();
     })
 
@@ -37,6 +65,13 @@
         setTimeout(() => {
             $('tspan:contains("Simplemaps.com Trial")').hide();
         }, 10);
+    }
+
+    const hideModal = () => {
+        document.querySelector('#modal-info').style.display = "none";
+         document.getElementById('city-items').innerHTML = "";
+        
+     
     }
 
     //#region Reload Map
@@ -150,6 +185,7 @@
     //#endregion
 
     //#region Click on Province And Zoom
+    var modelData = {};
     simplemaps_countrymap.hooks.zoomable_click_state = function (id) {
 
         let provincesList = [];
@@ -157,7 +193,47 @@
             const el = simplemaps_countrymap_mapdata.labels[index];
             provincesList.push(el);
         }
-        let provinceDataClicked = provincesList.find(f => f.parent_id == id)
+        let provinceDataClicked = provincesList.find(f => f.parent_id == id);
+        // const cityInfo = document.querySelector('#city-info');
+        // cityInfo.textContent = provinceDataClicked.name;
+        // modelData = { ...provinceDataClicked };
+
+        document.querySelector('#modal-info').style.display = "block"
+        modelData.title = provinceDataClicked.name;
+        modelData.parent_id = provinceDataClicked.parent_id;
+        modelData.value = provinceDataClicked.val;
+        modelData.latitute = provinceDataClicked.x;
+        modelData.longitude = provinceDataClicked.y;
+        // document.getElementById('city-info').textContent =` اطلاعات جغرافیایی استان: ${modelData.title}`;
+        document.getElementById('city-info').textContent = ` اطلاعات جغرافیایی استان:` + modelData.title;
+        const cityList = document.getElementById('city-items');
+
+        if (!cityList) return;
+
+        const fragment = document.createDocumentFragment();
+
+        // ۴. تعریف آیتم‌ها با ترتیب درست و شماره‌گذاری
+        const items = [
+            { label: 'شناسه والد', value: modelData.parent_id },
+            { label: 'مقدار', value: modelData.value },
+            { label: 'عرض جغرافیایی', value: modelData.latitute },
+            { label: 'طول جغرافیایی', value: modelData.longitude }
+        ];
+
+        // ۵. ساخت المنت‌ها و اضافه کردن به فرگمنت
+        items.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.style.listStyle = "none"; // حذف دایره پیش‌فرض لیست در صورت نیاز
+            li.style.padding = "5px 0";
+
+            // نمایش به صورت: ۱. نام فیلد: مقدار
+            li.innerHTML = `<span style="color: #666;">${index + 1}.</span> <strong>${item.label}:</strong> ${item.value}`;
+
+            fragment.appendChild(li);
+        });
+
+        // ۶. اعمال نهایی به DOM
+        cityList.appendChild(fragment);
     }
     //#endregion
 
@@ -166,8 +242,15 @@
     simplemaps_countrymap.hooks.click_location = function (id) {
 
         let clickedLocation = dataLocation[id];
+
     }
     //#endregion
+
+
+
+
+
+
 
 
 </script>
