@@ -1,0 +1,262 @@
+
+
+* {
+    box-sizing: border-box;
+    transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+body {
+    margin: 0;
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-main);
+    padding: 20px;
+}
+
+.app {
+    width: 100%;
+    max-width: 420px;
+}
+
+/* هدر اپلیکیشن */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.brand {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(to right, #6366f1, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.theme-toggle-btn {
+    background: var(--toggle-btn-bg);
+    border: var(--card-border);
+    color: var(--text-main);
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+    transform: rotate(15deg) scale(1.05);
+}
+
+/* باکس جستجو */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 15px 20px;
+    border-radius: 16px;
+    border: var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-main);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-box button {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    border: none;
+    background: var(--btn-bg);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-box button:hover {
+    background: var(--btn-hover);
+    transform: translateY(-2px);
+}
+
+/* کارت آب و هوا */
+.weather-card {
+    background: var(--card-bg);
+    border: var(--card-border);
+    padding: 35px 25px;
+    border-radius: 35px;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.hide {
+    display: none !important;
+}
+
+#cityName {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+.weather-main {
+    margin-bottom: 25px;
+}
+
+#weatherIcon {
+    width: 90px;
+    height: 90px;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
+}
+
+#temperature {
+    font-size: 68px;
+    font-weight: 800;
+    line-height: 1;
+    margin: 10px 0;
+    letter-spacing: -2px;
+}
+
+#weatherDesc {
+    color: var(--text-muted);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* بخش جزئیات */
+.details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.details .item {
+    background: var(--item-bg);
+    border: var(--card-border);
+    padding: 15px 5px;
+    border-radius: 18px;
+}
+
+.details .item span {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.details .item strong {
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+/* پیش‌بینی ۵ روزه */
+.forecast-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 25px 0 15px 0;
+    text-align: right;
+    border-right: 3px solid var(--btn-bg);
+    padding-right: 8px;
+}
+
+.forecast {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.day {
+    flex: 1;
+    background: var(--item-bg);
+    border: var(--card-border);
+    padding: 12px 4px;
+    border-radius: 18px;
+    text-align: center;
+}
+
+.day:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.day p {
+    font-size: 12px;
+    margin: 0;
+    color: var(--text-main);
+}
+
+.day .day-name {
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.day img {
+    width: 32px;
+    height: 32px;
+    margin: 4px 0;
+}
+
+.day .temp {
+    font-weight: 700;
+    margin-top: 6px;
+}
+
+/* پیام خطا */
+.error-message {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #f87171;
+    padding: 15px;
+    border-radius: 16px;
+    text-align: center;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+body.light-mode .error-message {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+/* افکت ورود نرم و شناور */
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* اعمال انیمیشن به کارت */
+.weather-card:not(.hide) {
+    animation: slideUpFade 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
