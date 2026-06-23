@@ -8,6 +8,8 @@
     <title>Iran Map</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.weather.css">
+
     <script src="js/bootstrap.min.js" defer></script>
 </head>
 
@@ -29,6 +31,40 @@
                 <div class="modal-body">
                     <ol id="city-items"></ol>
                 </div>
+
+                <!-- کارت نمایش آب و هوا -->
+                <div id="weatherCard" class="weather-card hide">
+                    <h2 id="cityName">تهران</h2>
+
+                    <div class="weather-main">
+                        <img id="weatherIcon" src="" alt="وضعیت آب و هوا">
+                        <div id="temperature">28°C</div>
+                        <div id="weatherDesc">صاف</div>
+                    </div>
+
+                    <!-- جزئیات اضافی با چیدمان گرید -->
+                    <div class="details">
+                        <div class="item">
+                            <span>رطوبت</span>
+                            <strong id="humidity">69%</strong>
+                        </div>
+                        <div class="item">
+                            <span>سرعت باد</span>
+                            <strong id="windSpeed">1.79 km/h</strong>
+                        </div>
+                        <div class="item">
+                            <span>فشار هوا</span>
+                            <strong id="pressure">1019 hPa</strong>
+                        </div>
+                    </div>
+
+                    <!-- بخش پیش‌بینی ۵ روز آینده -->
+                    <h3 class="forecast-title">پیش‌بینی ۵ روز آینده</h3>
+                    <div class="forecast" id="forecastContainer">
+                        <!-- این بخش توسط جاوااسکریپت پر می‌شود -->
+                    </div>
+                </div>
+
                 <div class="modal-footer">
                     <button onclick="hideModal()" type="button" class="btn btn-secondary">بستن</button>
                 </div>
@@ -45,6 +81,7 @@
 </html>
 <script src="js/mapdata.js"></script>
 <script src="js/citites.js"></script>
+
 <script src="js/countrymap.js"></script>
 <script src="js/jquery-3.3.1.js"></script>
 <script src="./js/bootstrap.bundle.min.js"></script>
@@ -56,9 +93,9 @@
     $(function () {
         // reloadMap();
         hideLogoSimplemaps();
-        //getLocationForProvince();
-        //changeColorProvince();
-        // changeColorForLocation();
+        getLocationForProvince();
+        //  changeColorProvince();
+        //  changeColorForLocation();
     })
 
     const hideLogoSimplemaps = () => {
@@ -69,9 +106,9 @@
 
     const hideModal = () => {
         document.querySelector('#modal-info').style.display = "none";
-         document.getElementById('city-items').innerHTML = "";
-        
-     
+        document.getElementById('city-items').innerHTML = "";
+
+
     }
 
     //#region Reload Map
@@ -205,7 +242,9 @@
         modelData.latitute = provinceDataClicked.x;
         modelData.longitude = provinceDataClicked.y;
         // document.getElementById('city-info').textContent =` اطلاعات جغرافیایی استان: ${modelData.title}`;
-        document.getElementById('city-info').textContent = ` اطلاعات جغرافیایی استان:` + modelData.title;
+        document.getElementById('city-info').textContent = ` استان : ` + modelData.title;
+
+
         const cityList = document.getElementById('city-items');
 
         if (!cityList) return;
@@ -215,7 +254,7 @@
         // ۴. تعریف آیتم‌ها با ترتیب درست و شماره‌گذاری
         const items = [
             { label: 'شناسه والد', value: modelData.parent_id },
-            { label: 'مقدار', value: modelData.value },
+            // { label: 'مقدار', value: modelData.value },
             { label: 'عرض جغرافیایی', value: modelData.latitute },
             { label: 'طول جغرافیایی', value: modelData.longitude }
         ];
@@ -231,9 +270,12 @@
 
             fragment.appendChild(li);
         });
+        weatherCard.classList.add('hide');
 
         // ۶. اعمال نهایی به DOM
-        cityList.appendChild(fragment);
+         cityList.appendChild(fragment);
+
+        // getWeather(modelData.title);
     }
     //#endregion
 
@@ -242,12 +284,105 @@
     simplemaps_countrymap.hooks.click_location = function (id) {
 
         let clickedLocation = dataLocation[id];
+        
+        document.querySelector('#modal-info').style.display = "block"
+        document.getElementById('city-info').textContent = `  شهر : ` + clickedLocation.city;
+        getWeather(clickedLocation.city);
 
     }
     //#endregion
 
+    //#region Add Weather Information
+    const apiKey = 'd28e1137741b471abebb3a30d839d611';
+
+    // عناصر DOM برای آب و هوا
+    const cityInput = document.getElementById('cityInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const weatherCard = document.getElementById('weatherCard');
+    const errorMessage = document.getElementById('errorMessage');
+
+    const cityName = document.getElementById('cityName');
+    const weatherIcon = document.getElementById('weatherIcon');
+    const temperature = document.getElementById('temperature');
+    const weatherDesc = document.getElementById('weatherDesc');
+    const humidity = document.getElementById('humidity');
+    const windSpeed = document.getElementById('windSpeed');
+    const pressure = document.getElementById('pressure');
+    const forecastContainer = document.getElementById('forecastContainer');
 
 
+    // ۲. فراخوانی داده‌های آب و هوایی
+    async function getWeather(city) {
+        
+        if (!city) return;
+
+        try {
+            // پنهان کردن خطاها و کارت قبل از بارگذاری مجدد
+            // errorMessage.classList.add('hide');
+            // weatherCard.classList.add('hide');
+
+            const encodedCity = encodeURIComponent(city);
+            const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodedCity}&appid=${apiKey}&units=metric&lang=fa`;
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('City not found');
+            }
+
+            const data = await response.json();
+            updateUI(data);
+        } catch (error) {
+            showError('شهر مورد نظر پیدا نشد یا خطایی رخ داده است.');
+        }
+    }
+
+    // ۳. به‌روزرسانی رابط کاربری (UI)
+    function updateUI(data) {
+        const current = data.list[0];
+
+        // مقادیر اصلی
+        cityName.textContent = data.city.name;
+        temperature.textContent = `${Math.round(current.main.temp)}°C`;
+        weatherDesc.textContent = current.weather[0].description;
+
+        // جزئیات کارت
+        humidity.textContent = `${current.main.humidity}%`;
+        windSpeed.textContent = `${current.wind.speed} m/s`;
+        pressure.textContent = `${current.main.pressure} hPa`;
+
+        // آیکون اصلی
+        const iconCode = current.weather[0].icon;
+        weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+
+        // ساخت پیش‌بینی ۵ روزه
+        forecastContainer.innerHTML = '';
+
+        // فیلتر کردن اطلاعات برای گرفتن یک داده از هر روز (معمولا ساعت ۱۲:۰۰ ظهر)
+        const dailyData = data.list.filter(item => item.dt_txt.includes('12:00:00')).slice(0, 5);
+
+        dailyData.forEach(day => {
+            const date = new Date(day.dt * 1000);
+            const dayName = date.toLocaleDateString('fa-IR', { weekday: 'long' });
+            const temp = `${Math.round(day.main.temp)}°C`;
+            const icon = day.weather[0].icon;
+
+            const dayElement = document.createElement('div');
+            dayElement.className = 'day';
+            dayElement.innerHTML = `
+            <p class="day-name">${dayName}</p>
+            <img src="https://openweathermap.org/img/wn/${icon}.png" alt="weather">
+            <p class="temp">${temp}</p>
+        `;
+            forecastContainer.appendChild(dayElement);
+        });
+
+        // نمایش کارت با انیمیشن ملایم
+        weatherCard.classList.remove('hide');
+    }
+
+
+
+    //#endregion
 
 
 
